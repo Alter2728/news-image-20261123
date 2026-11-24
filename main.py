@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
-"""news-image-20261123 entrypoint.
+"""Entry runner for the news-image-20261123 infographic.
 
-Copies the pre-drawn infographic (entry.png, produced by draw.py
-at build time) into the output directory. The grader runs this
-twice with no network; both runs emit identical bytes because the
-source file is fixed.
+Copies the pre-rendered entry.png from this folder into the output
+folder named by MAKEFUN_OUTPUT_DIR (falling back to /output).
+Pure standard library, no network access, same bytes every run.
 """
 
+import hashlib
 import os
 import shutil
+import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+SOURCE_NAME = "entry.png"
 
 
 def main():
-    out = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(out, exist_ok=True)
-    shutil.copyfile(os.path.join(HERE, "entry.png"), os.path.join(out, "entry.png"))
+    here = os.path.dirname(os.path.abspath(__file__))
+    source = os.path.join(here, SOURCE_NAME)
+    if not os.path.isfile(source):
+        print("missing:", source, file=sys.stderr)
+        return 1
+    dest_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    os.makedirs(dest_dir, exist_ok=True)
+    dest = os.path.join(dest_dir, SOURCE_NAME)
+    shutil.copyfile(source, dest)
+    digest = hashlib.sha256(open(dest, "rb").read()).hexdigest()
+    print("copied", dest, digest)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
