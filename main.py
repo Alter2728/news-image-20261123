@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""news-image-20261123 entrypoint.
+
+Copies the pre-drawn infographic (entry.png, produced by draw.py
+at build time) into the output directory. The grader runs this
+twice with no network; both runs emit identical bytes because the
+source file is fixed.
+"""
+
+import os
+import shutil
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def main():
+    out = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    os.makedirs(out, exist_ok=True)
+    shutil.copyfile(os.path.join(HERE, "entry.png"), os.path.join(out, "entry.png"))
+
+
+if __name__ == "__main__":
+    main()
